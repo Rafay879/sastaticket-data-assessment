@@ -1,0 +1,41 @@
+-- Same idea as assert_no_cancelled_bookings_in_marts.sql, but for PENDING
+-- (never ticketed, no revenue). The README only explicitly calls out
+-- cancelled bookings ("does not count") - excluding PENDING too is our own
+-- judgement call (see ASSUMPTIONS.md), so it gets its own explicit test
+-- rather than riding along on the CANCELLED one.
+
+with pending_slices as (
+
+    select distinct
+        carrier                as airline_code,
+        departure_date_local
+    from {{ ref('int_bookings_fx_converted') }}
+    where canonical_status = 'PENDING'
+
+),
+
+confirmed_recount as (
+
+    select
+        carrier                as airline_code,
+        departure_date_local,
+        count(*)                as expected_net_confirmed_bookings
+    from {{ ref('int_bookings_fx_converted') }}
+    where canonical_status = 'CONFIRMED'
+    group by carrier, departure_date_local
+
+)
+
+select
+    fct.airline_code,
+    fct.departure_date_local,
+    fct.net_confirmed_bookings,
+    coalesce(confirmed_recount.expected_net_confirmed_bookings, 0) as expected_net_confirmed_bookings
+from pending_slices
+join {{ ref('fct_net_bookings_by_airline_departure_date') }} fct
+    on fct.airline_code = pending_slices.airline_code
+    and fct.departure_date_local = pending_slices.departure_date_local
+left join confirmed_recount
+    on confirmed_recount.airline_code = fct.airline_code
+    and confirmed_recount.departure_date_local = fct.departure_date_local
+where fct.net_confirmed_bookings != coalesce(confirmed_recount.expected_net_confirmed_bookings, 0)

@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: fct_net_bookings_by_airline_departure_date
+    description: >
+      Net confirmed bookings and net revenue (PKR), by airline and local
+      departure date - the core deliverable.
+    tests:
+      - composite_unique:
+          arguments:
+            combination_of_columns: ['airline_code', 'departure_date_local']
+    columns:
+      - name: airline_code
+        description: >
+          Validated against stg_airlines via `relationships` rather than a
+          static `accepted_values` list, since the valid set is a
+          reference table, not a fixed enum.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_airlines')
+                field: airline_code
+      - name: departure_date_local
+        tests: [not_null]
+      - name: net_confirmed_bookings
+        tests: [not_null]
+      - name: net_pax
+        tests: [not_null]
+      - name: net_revenue_pkr
+        tests: [not_null]
+
+  - name: rpt_payment_reconciliation
+    description: >
+      QC report (not part of the required metric): billed fare vs. amount
+      actually settled through the payment gateway, per confirmed booking.
