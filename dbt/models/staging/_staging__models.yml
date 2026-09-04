@@ -8,3 +8,37 @@ models:
         tests: [unique, not_null]
       - name: booking_ref
         tests: [not_null]
+
+  - name: stg_gds_bookings
+    description: >
+      One row per GDS booking event. Append-only log, so a pnr can repeat -
+      not unique tested here on purpose.
+    columns:
+      - name: pnr
+        tests: [not_null]
+
+  - name: stg_lcc_bookings
+    description: >
+      One row per LCC booking event. Append-only log, so a booking_reference
+      can repeat - not unique tested here on purpose.
+    columns:
+      - name: booking_reference
+        tests: [not_null]
+
+  - name: stg_airports
+    description: Reference data, one row per airport.
+    columns:
+      - name: iata_code
+        tests: [unique, not_null]
+
+  - name: stg_airlines
+    description: Reference data, one row per airline.
+    columns:
+      - name: airline_code
+        tests: [unique, not_null]
+
+  - name: stg_fx_rates
+    description: Reference data, one row per currency per rate date.
+
+  - name: stg_status_codes
+    description: Reference data mapping raw feed status codes to canonical statuses.
