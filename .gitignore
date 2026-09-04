@@ -6,3 +6,8 @@ logs/
 .env
 .DS_Store
 dbt/.user.yml
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log

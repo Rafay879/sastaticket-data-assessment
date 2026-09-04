@@ -1,0 +1,5 @@
+{
+  "_comment": "Stub - filled in by the next prompt. Target: task role for the ECS Fargate container running `dbt build` (S3 read/write across bronze/silver/gold, Glue catalog write, CloudWatch Logs).",
+  "Version": "2012-10-17",
+  "Statement": []
+}

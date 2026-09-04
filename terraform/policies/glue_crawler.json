@@ -1,0 +1,5 @@
+{
+  "_comment": "Stub - filled in by the next prompt. Target: service role for the Glue crawler (read gold-layer S3 prefix, write to the Glue Data Catalog).",
+  "Version": "2012-10-17",
+  "Statement": []
+}

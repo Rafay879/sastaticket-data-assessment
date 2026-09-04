@@ -1,0 +1,5 @@
+{
+  "_comment": "Stub - filled in by the next prompt. Target: least-privilege policy for the four ingestion Lambdas (DynamoDB watermark read/write, bronze S3 write, Secrets Manager read for upstream API credentials).",
+  "Version": "2012-10-17",
+  "Statement": []
+}

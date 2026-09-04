@@ -1,0 +1,5 @@
+{
+  "_comment": "Stub - filled in by the next prompt. Target: execution role for the Step Functions state machine (invoke ingestion Lambdas, run the Fargate task, publish to the SNS failure topic).",
+  "Version": "2012-10-17",
+  "Statement": []
+}
