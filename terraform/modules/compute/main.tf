@@ -171,9 +171,13 @@ resource "aws_iam_role_policy_attachment" "fargate_dbt_task" {
 # -----------------------------------------------------------------------
 
 resource "aws_ecs_task_definition" "dbt" {
-  family                   = "${local.name_prefix}-dbt"
-  cpu                      = "512"
-  memory                   = "1024"
+  family = "${local.name_prefix}-dbt"
+  # 2 vCPU / 4 GB - sized so dbt's threads=4 in profiles.yml actually
+  # parallelizes across cores, and Iceberg metadata operations have
+  # breathing room. At the assessment's ~55K bookings/month, dbt build
+  # still finishes in seconds.
+  cpu                      = "2048"
+  memory                   = "4096"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = aws_iam_role.fargate_task_execution.arn
