@@ -1,5 +1,54 @@
 {
-  "_comment": "Stub - filled in by the next prompt. Target: execution role for the Step Functions state machine (invoke ingestion Lambdas, run the Fargate task, publish to the SNS failure topic).",
   "Version": "2012-10-17",
-  "Statement": []
+  "Statement": [
+    {
+      "Sid": "InvokeIngestionLambdas",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:InvokeFunction"
+      ],
+      "Resource": "arn:aws:lambda:${region}:${account_id}:function:${project_prefix}-${environment}-*-ingestion"
+    },
+    {
+      "Sid": "RunFargateTask",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:RunTask"
+      ],
+      "Resource": "arn:aws:ecs:${region}:${account_id}:task-definition/${dbt_task_family}:*"
+    },
+    {
+      "Sid": "PassRolesToECS",
+      "Effect": "Allow",
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Resource": [
+        "${fargate_task_role_arn}",
+        "${fargate_execution_role_arn}"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "StartGlueCrawler",
+      "Effect": "Allow",
+      "Action": [
+        "glue:StartCrawler",
+        "glue:GetCrawler"
+      ],
+      "Resource": "arn:aws:glue:${region}:${account_id}:crawler/${glue_crawler_name}"
+    },
+    {
+      "Sid": "PublishAlerts",
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": "${sns_topic_arn}"
+    }
+  ]
 }

@@ -31,3 +31,11 @@ variable "schedule_expression" {
   type        = string
   default     = "cron(0 2 * * ? *)"
 }
+
+# No default on purpose - a real destination address is apply-time,
+# per-deployment information, not something to hardcode a placeholder for.
+# Pass via -var, a .tfvars file, or TF_VAR_alerts_email.
+variable "alerts_email" {
+  description = "Email address that receives pipeline failure/staleness alerts (modules/monitoring)."
+  type        = string
+}

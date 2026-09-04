@@ -11,3 +11,4 @@ dbt/.user.yml
 *.tfstate.*
 *.tfvars
 crash.log
+.build/

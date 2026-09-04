@@ -1,5 +1,86 @@
 {
-  "_comment": "Stub - filled in by the next prompt. Target: task role for the ECS Fargate container running `dbt build` (S3 read/write across bronze/silver/gold, Glue catalog write, CloudWatch Logs).",
   "Version": "2012-10-17",
-  "Statement": []
+  "Statement": [
+    {
+      "Sid": "ReadBronze",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "${bronze_bucket_arn}",
+        "${bronze_bucket_arn}/*"
+      ]
+    },
+    {
+      "Sid": "ReadWriteSilverGold",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "${silver_bucket_arn}",
+        "${silver_bucket_arn}/*",
+        "${gold_bucket_arn}",
+        "${gold_bucket_arn}/*"
+      ]
+    },
+    {
+      "Sid": "GlueCatalogAccess",
+      "Effect": "Allow",
+      "Action": [
+        "glue:GetTable",
+        "glue:GetTables",
+        "glue:GetPartition",
+        "glue:GetPartitions",
+        "glue:CreateTable",
+        "glue:UpdateTable",
+        "glue:DeleteTable",
+        "glue:BatchCreatePartition",
+        "glue:BatchDeletePartition"
+      ],
+      "Resource": [
+        "arn:aws:glue:${region}:${account_id}:catalog",
+        "arn:aws:glue:${region}:${account_id}:database/${glue_database_name}",
+        "arn:aws:glue:${region}:${account_id}:table/${glue_database_name}/*"
+      ]
+    },
+    {
+      "Sid": "AthenaExecute",
+      "Effect": "Allow",
+      "Action": [
+        "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults",
+        "athena:StopQueryExecution"
+      ],
+      "Resource": "arn:aws:athena:${region}:${account_id}:workgroup/${athena_workgroup_name}"
+    },
+    {
+      "Sid": "AthenaWorkgroupRead",
+      "Effect": "Allow",
+      "Action": [
+        "athena:GetWorkGroup"
+      ],
+      "Resource": "arn:aws:athena:${region}:${account_id}:workgroup/${athena_workgroup_name}"
+    },
+    {
+      "Sid": "AthenaResultsBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "${athena_results_bucket_arn}",
+        "${athena_results_bucket_arn}/*"
+      ]
+    }
+  ]
 }

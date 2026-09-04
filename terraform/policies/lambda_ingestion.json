@@ -1,5 +1,39 @@
 {
-  "_comment": "Stub - filled in by the next prompt. Target: least-privilege policy for the four ingestion Lambdas (DynamoDB watermark read/write, bronze S3 write, Secrets Manager read for upstream API credentials).",
   "Version": "2012-10-17",
-  "Statement": []
+  "Statement": [
+    {
+      "Sid": "ReadWatermark",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem"
+      ],
+      "Resource": "${watermark_table_arn}"
+    },
+    {
+      "Sid": "PutBronzeObjects",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "${bronze_bucket_arn}/*"
+    },
+    {
+      "Sid": "GetIngestionSecrets",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:${region}:${account_id}:secret:${project_prefix}/ingestion/*"
+    },
+    {
+      "Sid": "WriteLogs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:${region}:${account_id}:log-group:/aws/lambda/${project_prefix}-${environment}-*-ingestion:*"
+    }
+  ]
 }

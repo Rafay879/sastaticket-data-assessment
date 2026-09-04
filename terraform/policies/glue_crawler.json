@@ -1,5 +1,17 @@
 {
-  "_comment": "Stub - filled in by the next prompt. Target: service role for the Glue crawler (read gold-layer S3 prefix, write to the Glue Data Catalog).",
   "Version": "2012-10-17",
-  "Statement": []
+  "Statement": [
+    {
+      "Sid": "ReadBronze",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "${bronze_bucket_arn}",
+        "${bronze_bucket_arn}/*"
+      ]
+    }
+  ]
 }
