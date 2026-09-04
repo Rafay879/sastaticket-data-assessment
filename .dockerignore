@@ -1,0 +1,8 @@
+.git
+dbt/target
+dbt/logs
+dbt/dbt_packages
+dbt/.user.yml
+*.duckdb
+*.duckdb.wal
+.DS_Store

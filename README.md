@@ -49,6 +49,17 @@ airline_code | departure_date_local | net_confirmed_bookings | net_pax | net_rev
 
 Anything we have *not* defined is a judgement call. Make it, and write down why.
 
+## Results
+
+From `fct_net_bookings_by_airline_departure_date` (`dbt build --select marts`),
+across the whole table:
+
+- **Total net confirmed bookings: 713**
+- **Total net revenue: PKR 90,072,854.75**
+
+See `ASSUMPTIONS.md` for how "net" was interpreted and every other judgement
+call behind these numbers.
+
 ## What you're given
 
 ```
@@ -61,14 +72,52 @@ dbt/               a working dbt-duckdb project with sources wired up and one
 `search_logs.csv` is **not** needed for the metric. It's there for a discussion
 later on.
 
-## Getting started
+## How to run
+
+Locally:
 
 ```bash
 cd dbt
 dbt build          # should succeed out of the box; if it doesn't, tell us
 ```
 
+Containerized:
+
+```bash
+docker build -t assessment .
+docker run --rm assessment
+```
+
 Everything runs locally against DuckDB. No cloud account, no credentials.
+
+## Known gaps
+
+Things not done, or done with lower confidence, in rough order of how much
+they'd change the numbers:
+
+- **LCC null-currency default and the ms-vs-s timestamp fix are inferred
+  from profiling, not confirmed with the source teams.** Defaulting null
+  `currency` to PKR and detecting millisecond epochs by magnitude
+  (`> 100000000000`) both work on this dataset but are guesses at the real
+  cause. See "who I'd ask" in `ASSUMPTIONS.md`.
+- **The cross-feed dedup rule (carrier's home feed wins) is inferred from
+  6 observed duplicate bookings**, not a documented rule from whoever owns
+  the GDS/LCC integrations. It's plausible and it works on this data, but
+  it's a guess, not a confirmed spec.
+- **`rpt_payment_reconciliation` surfaced a likely double-capture** on
+  booking `S86X7Y` (settled ≈2x the fare) that was flagged, not
+  investigated or corrected - it's a QC report, not a fix.
+- **No test enforces that every `origin` airport has timezone coverage** in
+  `stg_airports` - `int_bookings_local_departure` currently resolves for
+  every row in this dataset, but a future origin missing from the
+  reference table would silently produce a `null` `departure_date_local`
+  rather than erroring.
+- **`search_logs.csv` is untouched**, per the README's own scope note.
+- **No incremental materialization strategy** - every model rebuilds from
+  full source data on every run. Fine at this volume; would need
+  revisiting well before 50x scale.
+- **Bonus sections (B1 cloud run plan, B2 IaC) were not attempted** - the
+  core pipeline, its tests, and this documentation were the priority.
 
 ## What to hand in
 
