@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_payments
+    description: One row per payment gateway event.
+    columns:
+      - name: payment_id
+        tests: [unique, not_null]
+      - name: booking_ref
+        tests: [not_null]

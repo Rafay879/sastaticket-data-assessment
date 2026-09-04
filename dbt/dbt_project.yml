@@ -1,0 +1,20 @@
+name: 'sastaticket_assessment'
+version: '1.0.0'
+config-version: 2
+profile: 'sastaticket_assessment'
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths:  ["tests"]
+seed-paths:  ["seeds"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  sastaticket_assessment:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

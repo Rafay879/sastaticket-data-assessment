@@ -1,0 +1,11 @@
+# dbt-duckdb, entirely local. No cloud credentials required.
+# Run dbt from inside this directory: cd dbt && dbt build
+sastaticket_assessment:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../warehouse.duckdb
+      threads: 4
+      extensions:
+        - icu     # needed for AT TIME ZONE with named timezones

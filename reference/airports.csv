@@ -1,0 +1,18 @@
+iata_code,airport_name,city,country_code,timezone
+AUH,Abu Dhabi International,Abu Dhabi,AE,Asia/Dubai
+BKK,Suvarnabhumi,Bangkok,TH,Asia/Bangkok
+DOH,Hamad International,Doha,QA,Asia/Qatar
+DXB,Dubai International,Dubai,AE,Asia/Dubai
+ISB,Islamabad International,Islamabad,PK,Asia/Karachi
+JED,King Abdulaziz International,Jeddah,SA,Asia/Riyadh
+KHI,Jinnah International,Karachi,PK,Asia/Karachi
+KUL,Kuala Lumpur International,Kuala Lumpur,MY,Asia/Kuala_Lumpur
+LHE,Allama Iqbal International,Lahore,PK,Asia/Karachi
+LHR,Heathrow,London,GB,Europe/London
+MAN,Manchester,Manchester,GB,Europe/London
+MUX,Multan International,Multan,PK,Asia/Karachi
+PEW,Bacha Khan International,Peshawar,PK,Asia/Karachi
+RUH,King Khalid International,Riyadh,SA,Asia/Riyadh
+SHJ,Sharjah International,Sharjah,AE,Asia/Dubai
+SKT,Sialkot International,Sialkot,PK,Asia/Karachi
+UET,Quetta International,Quetta,PK,Asia/Karachi

@@ -1,0 +1,8 @@
+airline_code,airline_name,feed
+9P,Fly Jinnah,lcc_bookings
+ED,Airblue,gds_bookings
+ER,Serene Air,lcc_bookings
+FZ,flydubai,lcc_bookings
+G9,Air Arabia,lcc_bookings
+PA,AirSial,gds_bookings
+PK,Pakistan International Airlines,gds_bookings

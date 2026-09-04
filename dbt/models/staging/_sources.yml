@@ -1,0 +1,43 @@
+version: 2
+
+sources:
+  - name: raw
+    description: >
+      Raw feeds landed as-is. Read directly off local disk, no separate load
+      step. Paths are relative to this dbt project directory, so run dbt from
+      inside `dbt/`.
+    meta:
+      external_location: "read_csv_auto('../data/raw/{name}.csv')"
+    tables:
+      - name: payments
+        description: >
+          Payment gateway events. One row per event, NOT one row per booking.
+
+      - name: search_logs
+        description: >
+          Flight search events. Not required for the core metric - provided for
+          the follow-up discussion.
+
+      - name: gds_bookings
+        description: >
+          GDS-sourced bookings, newline-delimited JSON. This is an append-only
+          event log: a booking reference can appear more than once.
+        meta:
+          external_location: "read_json_auto('../data/raw/gds_bookings.json', format='newline_delimited', union_by_name=true)"
+
+      - name: lcc_bookings
+        description: >
+          Low-cost-carrier direct-connect bookings, newline-delimited JSON.
+          Also an append-only event log, with a different schema.
+        meta:
+          external_location: "read_json_auto('../data/raw/lcc_bookings.json', format='newline_delimited', union_by_name=true)"
+
+  - name: reference
+    description: Slow-moving reference data maintained by the data team.
+    meta:
+      external_location: "read_csv_auto('../reference/{name}.csv')"
+    tables:
+      - name: airports
+      - name: airlines
+      - name: fx_rates
+      - name: status_codes

@@ -1,0 +1,9 @@
+feed,raw_status,canonical_status,notes
+gds_bookings,HK,CONFIRMED,Holding confirmed - ticketed and valid
+gds_bookings,TK,CONFIRMED,Schedule change accepted by airline - booking remains valid
+gds_bookings,XX,CANCELLED,Cancelled by passenger
+gds_bookings,UN,CANCELLED,Unable / cancelled by airline - segment no longer exists
+gds_bookings,HL,PENDING,"Waitlisted - never ticketed, no revenue"
+lcc_bookings,CONFIRMED,CONFIRMED,Ticketed
+lcc_bookings,CANCELLED,CANCELLED,"Cancelled, refund normally follows"
+lcc_bookings,PENDING,PENDING,Payment not completed - never ticketed
