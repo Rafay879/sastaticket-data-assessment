@@ -186,6 +186,32 @@ a duplicate/double capture at the gateway. This is exactly the kind of
 issue the reconciliation report exists to surface - no correction has been
 applied to the data.
 
+**Correction, made after initially assuming otherwise:** all 9 originally-
+flagged variances turned out to already be `CONFIRMED` bookings - none were
+cancelled-with-refund. `assert_payment_reconciliation_within_tolerance.sql`
+now filters explicitly on `canonical_status = 'CONFIRMED'` anyway (defense-
+in-depth, since `rpt_payment_reconciliation` is already CONFIRMED-only
+upstream), and `canonical_status` / `currency_was_defaulted` were added as
+output columns on `rpt_payment_reconciliation` so this is checkable
+directly instead of by ad-hoc join. Digging further split the 9 into two
+distinct root causes:
+
+- **7 bookings** (incl. `S86X7Y`) where `net_settled_pkr` is exactly 2x
+  `fare_amount_pkr` - the double-capture pattern above.
+- **2 bookings** (`WTZB55`, `0LL2P5`) where `currency_was_defaulted = true`
+  - their `fare_amount_pkr` baseline is itself wrong (fare defaulted to
+    PKR at a trivially small numeric value, e.g. `371.60`), while the
+    actual gateway payment came through in AED for a matching native
+    amount. This isn't a settlement problem at all - it's the null-
+    currency-default assumption very likely being wrong for these two
+    specific bookings, already surfaced separately by
+    `assert_currency_default_visibility.sql`.
+
+The test now excludes `currency_was_defaulted` bookings, since counting
+them here too would double-report the same root cause under a misleading
+"settlement variance" label. Warn count: **9 → 7**, isolating the
+double-capture-shaped anomalies specifically.
+
 ## Headline numbers
 
 Computed from `fct_net_bookings_by_airline_departure_date` after
@@ -248,10 +274,15 @@ profiling this dataset, not generic coverage:
 - **`assert_payment_reconciliation_within_tolerance.sql`** (WARN) -
   variances beyond a 1 PKR rounding tolerance are a reconciliation finding
   to investigate, not a build-blocking error, since the underlying payment
-  data is what it is. Currently warns on **9** confirmed, already-captured
-  bookings - including the ~2x double-capture on `S86X7Y` noted above.
+  data is what it is. Filters explicitly on `canonical_status = 'CONFIRMED'`
+  (defense-in-depth - `rpt_payment_reconciliation` is already CONFIRMED-only
+  upstream) and excludes `currency_was_defaulted` bookings, whose variance
+  is really a mis-priced fare baseline already caught by the test above, not
+  a settlement problem - see "Payment reconciliation FX basis" above.
   Bookings with no captured payment yet (`has_any_captured = false`) are
-  excluded, since "not yet paid" isn't a discrepancy.
+  also excluded, since "not yet paid" isn't a discrepancy. Currently warns
+  on **7** confirmed, already-captured, non-defaulted-currency bookings -
+  including the ~2x double-capture on `S86X7Y` noted above.
 
 ## What I'd do differently with more time / someone to ask
 

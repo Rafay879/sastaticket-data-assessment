@@ -15,6 +15,8 @@ with bookings as (
         pnr             as booking_ref,
         source_feed,
         booking_made_at,
+        canonical_status,
+        currency_was_defaulted,
         fare_currency,
         fare_amount_pkr
     from {{ ref('int_bookings_fx_converted') }}
@@ -40,6 +42,8 @@ settled as (
     select
         bookings.booking_ref,
         bookings.source_feed,
+        bookings.canonical_status,
+        bookings.currency_was_defaulted,
         bookings.fare_amount_pkr,
         bookings.booking_made_at,
         -- falls back to the booking's own currency when a booking has no
@@ -68,6 +72,8 @@ converted as (
 select
     booking_ref,
     source_feed,
+    canonical_status,
+    currency_was_defaulted,
     fare_amount_pkr,
     net_settled_native * pkr_per_unit                      as net_settled_pkr,
     (net_settled_native * pkr_per_unit) - fare_amount_pkr  as difference_pkr,
